@@ -1,0 +1,81 @@
+entity Customer {
+    firstName String required
+    lastName String required
+}
+
+entity Product {
+    name String required
+    description String
+}
+
+entity ProductOrder {
+    placedDate Instant required
+    code String required
+}
+
+entity OrderItem {
+    quantity Integer required min(0)
+    totalPrice BigDecimal required min(0)
+}
+
+relationship ManyToOne {
+	OrderItem{product(name) required} to Product
+}
+
+relationship OneToMany {
+   ProductOrder{orderItem} to OrderItem{order(code) required}
+}
+
+entity Invoice {
+    code String required
+    date Instant required
+    details String
+}
+
+entity Shipment {
+    trackingCode String
+    date Instant required
+}
+
+relationship OneToMany {
+    Invoice{shipment} to Shipment{invoice(code) required}
+}
+
+/*
+application {
+  config {
+    baseName store
+    applicationType gateway
+    clientFramework react
+  }
+  entities *
+}
+
+application {
+  config {
+    baseName product
+    applicationType microservice
+    serverPort 8081
+  }
+  entities Product, ProductOrder, OrderItem
+}
+
+application {
+  config {
+    baseName invoice
+    applicationType microservice
+    serverPort 8082
+  }
+  entities Invoice, Shipment
+}
+
+microservice Product, ProductOrder, OrderItem with product
+microservice Invoice, Shipment with invoice
+
+deployment {
+  deploymentType docker-compose
+  appsFolders [store, invoice, product]
+  dockerRepositoryName "bbl"
+  monitoring elk
+}
+*/
